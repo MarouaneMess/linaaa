@@ -11,11 +11,24 @@ const messageEl = document.getElementById("message");
 const footerEl = document.getElementById("footer");
 
 const LOVE_TEXT = "Lina";
-const MESSAGE_LINES = [
-  "Je t'aime de tout mon cœur.",
-  "Tu me manques à chaque instant.",
-  "Pour toujours et à jamais ❤️",
+const MESSAGE_SETS = [
+  [
+    "Je t'aime ma p'tite choquette de tout mon cœur.",
+    "Tu me manques à chaque instant.",
+    "Pour toujours et à jamais ❤️",
+  ],
+  [
+    "Tu es ma lumière.",
+    "Chaque jour je pense à toi.",
+    "Rien n'est plus doux que nous deux.",
+  ],
+  [
+    "Ton sourire est mon soleil.",
+    "Tes mots sont ma musique.",
+    "Mon cœur bat pour toi.",
+  ],
 ];
+let messageIndex = 0;
 
 // ----- Renderer / Scene -----
 const renderer = new THREE.WebGLRenderer({
@@ -109,6 +122,25 @@ const haloMaterial = new THREE.MeshBasicMaterial({
 const halo = new THREE.Mesh(haloGeometry, haloMaterial);
 halo.position.copy(heart.position);
 scene.add(halo);
+
+// Orbital light rings for extra wow
+const ringMat = new THREE.MeshBasicMaterial({
+  color: 0xff9bd1,
+  transparent: true,
+  opacity: 0.35,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+});
+const ringGeo1 = new THREE.TorusGeometry(2.4, 0.03, 12, 64);
+const ringGeo2 = new THREE.TorusGeometry(1.9, 0.025, 12, 64);
+const ring1 = new THREE.Mesh(ringGeo1, ringMat.clone());
+const ring2 = new THREE.Mesh(ringGeo2, ringMat.clone());
+ring1.rotation.x = Math.PI / 2.3;
+ring2.rotation.x = Math.PI / 1.9;
+ring1.position.set(0, 1.0, 0);
+ring2.position.set(0, 1.25, 0);
+scene.add(ring1);
+scene.add(ring2);
 
 // Floating mini hearts for a more romantic vibe
 const miniHearts = [];
@@ -353,18 +385,21 @@ function typeLines(el, lines) {
 }
 
 function reveal() {
-  if (didReveal) return;
-  didReveal = true;
+  const lines = MESSAGE_SETS[messageIndex];
+  messageIndex = (messageIndex + 1) % MESSAGE_SETS.length;
 
-  typeLines(messageEl, MESSAGE_LINES);
+  typeLines(messageEl, lines);
   footerEl.textContent = "Lina, tu es tout pour moi.";
-  revealBtn.textContent = "Message révélé";
-  revealBtn.disabled = true;
+  revealBtn.textContent = "Révéler encore";
+  revealBtn.disabled = false;
   moreBtn.disabled = false;
 
-  // Show 3D text and trigger sparkle burst.
-  if (textMesh) textMesh.visible = true;
-  if (subTextMesh) subTextMesh.visible = true;
+  // On first reveal, show 3D text and trigger burst; afterwards, only burst.
+  if (!didReveal) {
+    didReveal = true;
+    if (textMesh) textMesh.visible = true;
+    if (subTextMesh) subTextMesh.visible = true;
+  }
   burstSparks(heart.position.clone().add(new THREE.Vector3(0, 0.2, 0)), 1.4);
 }
 
@@ -405,6 +440,13 @@ function animate() {
   heart.position.y = 1.05 + Math.sin(t * 1.15) * 0.08;
   halo.position.copy(heart.position);
   halo.scale.setScalar(1.0 + (Math.sin(t * 1.2) * 0.04 + 0.04));
+  heartMaterial.emissiveIntensity = 0.75 + Math.sin(t * 2.2) * 0.1;
+
+  // Orbital rings motion
+  ring1.rotation.y = t * 0.25;
+  ring2.rotation.y = -t * 0.18;
+  ring1.material.opacity = 0.25 + Math.sin(t * 1.6) * 0.12;
+  ring2.material.opacity = 0.22 + Math.cos(t * 1.3) * 0.1;
 
   // Lights breathe
   key.intensity = 58 + Math.sin(t * 1.1) * 10;
