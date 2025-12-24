@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lina</title>
+    <meta name="description" content="A 3D love message for Lina." />
+    <link rel="preconnect" href="https://unpkg.com" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="c"></canvas>
+
+      <div class="panel" role="dialog" aria-label="Message d'amour">
+        <div class="panel__title">Lina</div>
+        <div class="panel__text" id="message">
+          Je t'aime de tout mon cœur. Tu me manques à chaque instant. Pour toujours et à jamais.
+        </div>
+        <div class="panel__actions">
+          <button id="reveal" class="btn">Révéler le message</button>
+          <button id="more" class="btn btn--ghost" title="Encore plus d'étincelles">Encore plus d'étincelles</button>
+        </div>
+        <div class="panel__footer" id="footer">Made with love.</div>
+      </div>
+
+    </div>
+
+   <script type="module" src="./main.js"></script>
+
+  </body>
+</html>
